@@ -148,22 +148,42 @@ driver.find_element(
     By.CSS_SELECTOR, "button[aria-label='Close dialog']").click()
 print("Card Closed")
 
-# Drag and drop card from To Do → In Progress → Done
 card = driver.find_element(
     By.XPATH, "/html[1]/body[1]/div[1]/div[2]/div[1]/div[1]/div[2]/div[1]/div[1]/div[2]/div[1]/div[1]/div[5]/div[1]/div[1]/div[1]/div[1]/div[2]/ol[1]/li[1]/div[1]/ol[1]/li[1]/div[1]/div[1]/div[1]")
-in_progress_list = driver.find_elements(
-    By.XPATH, "/html[1]/body[1]/div[1]/div[2]/div[1]/div[1]/div[2]/div[1]/div[1]/div[2]/div[1]/div[1]/div[5]/div[1]/div[1]/div[1]/div[1]/div[2]/ol[1]/li[2]/div[1]/ol[1]/li[1]/div[1]/div[1]/div[1]/div[1]/span[2]/a[1]")[1]
-done_list = driver.find_elements(
-    By.XPATH, "/html[1]/body[1]/div[1]/div[2]/div[1]/div[1]/div[2]/div[1]/div[1]/div[2]/div[1]/div[1]/div[5]/div[1]/div[1]/div[1]/div[1]/div[2]/ol[1]/li[3]/div[1]/ol[1]/li[1]/div[1]/div[1]/div[1]")[2]
 
-actions.drag_and_drop(card, in_progress_list).perform()
-time.sleep(1)
-actions.drag_and_drop(card, done_list).perform()
-time.sleep(1)
+actions.move_to_element(card).perform()
+print("Hovered on card")
 
-# # Assert final position
-# final_column_cards = driver.find_elements(
-#     By.CSS_SELECTOR, ".list:nth-child(3) .list-card-title")
-# assert any("Sample Task" in card.text for card in final_column_cards)
+driver.find_element(
+    By.XPATH, "/html[1]/body[1]/div[1]/div[2]/div[1]/div[1]/div[2]/div[1]/div[1]/div[2]/div[1]/div[1]/div[5]/div[1]/div[1]/div[1]/div[1]/div[2]/ol[1]/li[1]/div[1]/ol[1]/li[1]/div[1]/div[1]/div[2]/div[1]"
+).click()
+print("Edit icon on card clicked")
+
+# Click the Move button
+wait.until(EC.element_to_be_clickable((
+    By.CSS_SELECTOR, "button[data-testid='quick-card-editor-move']"
+))).click()
+print("Move button clicked")
+
+# Open the dropdown to select target list
+dropdown = wait.until(EC.element_to_be_clickable((
+    By.XPATH, "//div[@data-testid='list-select']//div[contains(@class, 'placeholder')]"
+)))
+dropdown.click()
+print("Dropdown opened")
+
+# Select "In Progress" from dropdown
+in_progress_option = wait.until(EC.element_to_be_clickable((
+    By.XPATH, "//div[@role='listbox']//div[normalize-space()='In Progress']"
+)))
+in_progress_option.click()
+print("In Progress selected")
+
+# Click the final "Move" button in modal
+move_btn = wait.until(EC.element_to_be_clickable((
+    By.XPATH, "//button[normalize-space()='Move']"
+)))
+move_btn.click()
+print("Card Moved")
 
 driver.quit()
